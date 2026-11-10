@@ -440,6 +440,10 @@ function SpanishFlashcards() {
   const voiceRef = useRef(null);
   const englishVoiceRef = useRef(null);
 
+  // Swipe gesture tracking on the flashcard
+  const swipeStartRef = useRef(null); // { x, y } | null
+  const swipedRef = useRef(false); // true when the last gesture was a swipe (so the click is ignored)
+
   // Speaking-practice (mic) state
   const [micSupported, setMicSupported] = useState(true);
   const [listening, setListening] = useState(false);
@@ -565,9 +569,44 @@ function SpanishFlashcards() {
     speak(deck[newOrder[0]].es);
   }
 
+  // Tap behaviour:
+  //  - front side  -> flip to the meaning (and speak the Spanish word)
+  //  - back side   -> go straight to the next card
   function handleCardTap() {
-    setFlipped((f) => !f);
-    speak(card.es);
+    // A swipe also fires a click afterwards; ignore that one.
+    if (swipedRef.current) {
+      swipedRef.current = false;
+      return;
+    }
+    if (flipped) {
+      goNext();
+    } else {
+      setFlipped(true);
+      speak(card.es);
+    }
+  }
+
+  // Swipe: left -> next card, right -> previous card (works on either side of the card).
+  function handleSwipeStart(e) {
+    swipeStartRef.current = { x: e.clientX, y: e.clientY };
+    swipedRef.current = false;
+  }
+
+  function handleSwipeEnd(e) {
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      swipedRef.current = true;
+      if (dx < 0) goNext();
+      else goPrev();
+    }
+  }
+
+  function handleSwipeCancel() {
+    swipeStartRef.current = null;
   }
 
   function markKnown() {
@@ -719,7 +758,7 @@ function SpanishFlashcards() {
         .chip { transition: transform 0.15s ease, box-shadow 0.15s ease; }
         .chip:active { transform: translateY(2px); }
 
-        .flip-scene { perspective: 1400px; }
+        .flip-scene { perspective: 1400px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
         .flip-card {
           position: relative;
           transform-style: preserve-3d;
@@ -767,7 +806,7 @@ function SpanishFlashcards() {
             ¡Vamos! <span style={{ color: category.dark }}>Flashcards</span>
           </div>
           <div style={{ fontWeight: 600, opacity: 0.75, fontSize: 14, marginTop: 2 }}>
-            Aprende español con tarjetas — toca para escuchar y voltear
+            Aprende español con tarjetas — toca para voltear, desliza para avanzar
           </div>
 
           {/* Mode tabs + volume control */}
@@ -973,7 +1012,13 @@ function SpanishFlashcards() {
         </div>
 
         {/* Flashcard */}
-        <div className="flip-scene" style={{ height: 300, marginBottom: 18 }}>
+        <div
+          className="flip-scene"
+          style={{ height: 300, marginBottom: 18 }}
+          onPointerDown={handleSwipeStart}
+          onPointerUp={handleSwipeEnd}
+          onPointerCancel={handleSwipeCancel}
+        >
           <div
             className={`flip-card${flipped ? " is-flipped" : ""}`}
             style={{ width: "100%", height: "100%", cursor: "pointer" }}
@@ -1082,8 +1127,8 @@ function SpanishFlashcards() {
                 <br />
                 <span style={{ opacity: 0.85, fontStyle: "italic" }}>{card.ex_en}</span>
               </div>
-              <div style={{ position: "absolute", bottom: 16, fontSize: 12, fontWeight: 600, opacity: 0.7 }}>
-                toca para escuchar de nuevo ↻
+              <div style={{ position: "absolute", bottom: 16, fontSize: 12, fontWeight: 600, opacity: 0.7, textAlign: "center" }}>
+                toca o desliza ← para la siguiente ▶
               </div>
             </div>
           </div>
