@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8" />
+<meta name="google" content="notranslate" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>¡Vamos! Flashcards</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FFE380'/%3E%3Ccircle cx='50' cy='54' r='30' fill='%232EC4B6' stroke='%2320232B' stroke-width='4'/%3E%3Ccircle cx='38' cy='42' r='9' fill='%232EC4B6' stroke='%2320232B' stroke-width='3'/%3E%3Ccircle cx='62' cy='42' r='9' fill='%232EC4B6' stroke='%2320232B' stroke-width='3'/%3E%3Ccircle cx='38' cy='42' r='3.5' fill='%2320232B'/%3E%3Ccircle cx='62' cy='42' r='3.5' fill='%2320232B'/%3E%3Cpath d='M40 62 Q50 68 60 62' fill='none' stroke='%2320232B' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
@@ -370,29 +371,67 @@ function pickEnglishVoice(voices) {
    unfairly count against the learner.
 ------------------------------------------------------------------- */
 
+const NUM_WORDS = { "0": "cero", "1": "uno", "2": "dos", "3": "tres", "4": "cuatro", "5": "cinco", "6": "seis", "7": "siete", "8": "ocho", "9": "nueve", "10": "diez", "un": "uno" };
+const ARTICLE_WORDS = ["el", "la", "los", "las", "un", "una"];
+
+// Lowercase, strip accents/punctuation, and turn digits into Spanish words
+// (speech recognition often writes "1" instead of "uno").
 function normalizeWord(w) {
-  return w
+  const clean = w
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // strip accents
+    .replace(/[̀-ͯ]/g, "") // strip accents
     .replace(/[¿?¡!.,;:"']/g, "")
     .trim();
+  return NUM_WORDS[clean] || clean;
 }
 
+function editDistance(a, b) {
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+// Same word, or a one-letter slip on words of 4+ letters (the recognizer isn't perfect).
+function wordsMatch(a, b) {
+  if (a === b) return true;
+  if (a.length >= 4 && b.length >= 4) return editDistance(a, b) <= 1;
+  return false;
+}
+
+// Word order doesn't matter, articles count for much less than the noun itself.
 function diffWords(said, correct) {
   const saidWords = said.trim().split(/\s+/).filter(Boolean).map(normalizeWord);
-  const correctWords = correct.trim().split(/\s+/).filter(Boolean).map(normalizeWord);
-  const len = Math.max(saidWords.length, correctWords.length);
+  const rawCorrect = correct.trim().split(/\s+/).filter(Boolean);
+  const correctWords = rawCorrect.map(normalizeWord);
+  const used = new Array(saidWords.length).fill(false);
   const rows = [];
-  let hits = 0;
-  for (let i = 0; i < len; i++) {
-    const cw = correctWords[i];
-    const sw = saidWords[i];
-    const ok = cw !== undefined && sw !== undefined && cw === sw;
-    if (ok) hits++;
-    rows.push({ expected: cw, said: sw, ok });
-  }
-  const score = correctWords.length ? Math.round((hits / correctWords.length) * 100) : 0;
+  let total = 0;
+  let got = 0;
+  correctWords.forEach((cw, idx) => {
+    const weight = ARTICLE_WORDS.includes(cw) ? 0.25 : 1;
+    let found = -1;
+    for (let i = 0; i < saidWords.length; i++) {
+      if (!used[i] && wordsMatch(saidWords[i], cw)) {
+        found = i;
+        break;
+      }
+    }
+    if (found >= 0) used[found] = true;
+    total += weight;
+    if (found >= 0) got += weight;
+    rows.push({ expected: rawCorrect[idx], said: found >= 0 ? saidWords[found] : undefined, ok: found >= 0 });
+  });
+  const score = total ? Math.round((got / total) * 100) : 0;
   return { rows, score };
 }
 
@@ -406,6 +445,23 @@ function shuffle(arr) {
 }
 
 
+
+/* "el perro" -> "the dog": nouns that carry a Spanish article get "the" in English too */
+const NO_THE_ES = ["el lunes", "el martes"];
+
+function withThe(card) {
+  const hasArticle = /^(el|la|los|las)\s/i.test(card.es);
+  if (!hasArticle || NO_THE_ES.includes(card.es)) return card.en;
+  return "the " + card.en;
+}
+
+// Text sent to the voice (reads "hour / time" as "hour or time")
+function speakableEn(card) {
+  return withThe(card).replace(/\s*\/\s*/g, " or ");
+}
+
+// Locales tried in order for speech recognition (falls back if one isn't supported)
+const RECOGNITION_LANGS = ["es-US", "es-MX", "es-ES"];
 
 /* Small icon button used in the bottom dock */
 function DockBtn({ icon, label, onClick, disabled, bg }) {
@@ -596,7 +652,7 @@ function SpanishFlashcards() {
       speak(card.es, { lang: "es", rate: 0.9 });
     } else {
       setFlipped(true);
-      speak(card.en, { lang: "en", rate: 0.95 });
+      speak(speakableEn(card), { lang: "en", rate: 0.95 });
     }
   }
 
@@ -662,7 +718,7 @@ function SpanishFlashcards() {
   /* ------------------------------------------------------------
      SPEAKING PRACTICE (mic)
   ------------------------------------------------------------ */
-  function startListening() {
+  function startListening(langIndex = 0) {
     const SR = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
     if (!SR) {
       setMicError("El reconocimiento de voz no está disponible en este navegador.");
@@ -670,19 +726,32 @@ function SpanishFlashcards() {
     }
     setMicError("");
     setSpeechResult(null);
+    // Stop any voice that is still talking so the microphone doesn't pick it up.
+    if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel();
+
     const recognition = new SR();
-    recognition.lang = voiceRef.current ? voiceRef.current.lang : "es-419";
+    recognition.lang = RECOGNITION_LANGS[langIndex];
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.maxAlternatives = 5;
 
     recognition.onstart = () => setListening(true);
     recognition.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
-      setSpeechResult({ transcript, ...diffWords(transcript, card.es) });
+      // Take the best-matching of the recognizer's alternatives.
+      const alts = Array.from(e.results[0]).map((a) => a.transcript);
+      let best = null;
+      alts.forEach((t) => {
+        const d = diffWords(t, card.es);
+        if (!best || d.score > best.score) best = { transcript: t, ...d };
+      });
+      if (best) setSpeechResult(best);
     };
     recognition.onerror = (e) => {
       setListening(false);
+      if (e.error === "language-not-supported" && langIndex + 1 < RECOGNITION_LANGS.length) {
+        startListening(langIndex + 1);
+        return;
+      }
       if (e.error === "not-allowed" || e.error === "service-not-allowed") {
         setMicError("Permiso de micrófono denegado. Revisa los permisos del navegador.");
       } else if (e.error === "no-speech") {
@@ -975,7 +1044,17 @@ function SpanishFlashcards() {
                       significado
                     </div>
                     <div style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 800, fontSize: "clamp(38px, 8vh, 76px)", textAlign: "center", lineHeight: 1.1 }}>
-                      {card.en}
+                      {(() => {
+                        const m = withThe(card).match(/^(the)\s+(.*)$/);
+                        return m ? (
+                          <>
+                            <span style={{ opacity: 0.65, fontWeight: 700, fontSize: "0.6em", marginRight: "0.25em" }}>{m[1]}</span>
+                            {m[2]}
+                          </>
+                        ) : (
+                          card.en
+                        );
+                      })()}
                     </div>
                     <div style={{ width: 48, height: 4, background: "#fff", opacity: 0.6, margin: "2.5vh 0" }} />
                     <div style={{ textAlign: "center", fontWeight: 600, fontSize: "clamp(15px, 2.6vh, 23px)", lineHeight: 1.4, padding: "0 6px" }}>
@@ -1030,13 +1109,13 @@ function SpanishFlashcards() {
 
             {/* Bottom dock: only the essentials */}
             <div className="dock">
-              <DockBtn icon="🔊" label="Repetir" onClick={() => speakBoth(card.es, card.en)} disabled={!audioSupported} />
+              <DockBtn icon="🔊" label="Repetir" onClick={() => speakBoth(card.es, speakableEn(card))} disabled={!audioSupported} />
               <DockBtn icon="🐢" label="Lento" onClick={() => speakSpanish(card.es, 0.5)} disabled={!audioSupported} />
               {micSupported && (
                 <DockBtn
                   icon={listening ? "⏹️" : "🎤"}
                   label={listening ? "Parar" : "Hablar"}
-                  onClick={listening ? stopListening : startListening}
+                  onClick={listening ? stopListening : () => startListening(0)}
                   bg={listening ? "#FF6F91" : undefined}
                 />
               )}
