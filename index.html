@@ -535,6 +535,10 @@ function SpanishFlashcards() {
   function speakSpanish(text, rate = 0.9) {
     speak(text, { lang: "es", rate });
   }
+  // Says the pair: "el perro ... dog"
+  function speakBoth(esText, enText) {
+    speak(esText, { lang: "es", rate: 0.9, onEnd: () => speak(enText, { lang: "en", rate: 0.95 }) });
+  }
 
   const masteredCount = useMemo(
     () => deck.filter((c) => mastered[`${catId}|${c.es}`]).length,
@@ -579,17 +583,20 @@ function SpanishFlashcards() {
     speak(deck[newOrder[0]].es);
   }
 
-  // Tap: front -> flip to the meaning (and speak); back -> next card.
+  // Tap: flip the card back and forth and say the side that appears
+  // ("el perro" <-> "dog"), as many times as you like.
+  // Only a swipe (or the keyboard arrows) changes the word.
   function handleCardTap() {
     if (swipedRef.current) {
       swipedRef.current = false;
       return;
     }
     if (flipped) {
-      goNext();
+      setFlipped(false);
+      speak(card.es, { lang: "es", rate: 0.9 });
     } else {
       setFlipped(true);
-      speak(card.es);
+      speak(card.en, { lang: "en", rate: 0.95 });
     }
   }
 
@@ -758,6 +765,10 @@ function SpanishFlashcards() {
     <div
       style={{
         width: "100%",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         background: "#FFE380",
         backgroundImage:
           "radial-gradient(circle at 8% 12%, rgba(255,255,255,0.5) 0, transparent 40%), radial-gradient(circle at 92% 88%, rgba(255,255,255,0.35) 0, transparent 45%)",
@@ -770,11 +781,20 @@ function SpanishFlashcards() {
 
         .app {
           height: 100vh; height: 100dvh;
-          width: 100%; max-width: 560px; margin: 0 auto;
+          width: 100%; max-width: 430px; margin: 0 auto;
           display: flex; flex-direction: column;
           box-sizing: border-box;
           padding: max(10px, env(safe-area-inset-top)) 14px max(10px, env(safe-area-inset-bottom));
           position: relative;
+        }
+        /* On computers / tablets: show the app as a phone-sized column in the middle of the screen */
+        @media (min-width: 600px) {
+          .app {
+            height: 100vh; height: min(100dvh - 32px, 880px);
+            border-radius: 36px; border: 4px solid #20232B;
+            background: rgba(255,249,238,0.35);
+            box-shadow: 10px 10px 0 rgba(32,35,43,0.25);
+          }
         }
         .topbar { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
         .pill {
@@ -831,7 +851,7 @@ function SpanishFlashcards() {
 
         .backdrop { position: fixed; inset: 0; background: rgba(32,35,43,0.45); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
         .sheet {
-          width: 100%; max-width: 560px; max-height: 78vh; overflow-y: auto; box-sizing: border-box;
+          width: 100%; max-width: 430px; max-height: 78vh; overflow-y: auto; box-sizing: border-box;
           background: #FFF9EE; border: 4px solid #20232B; border-bottom: none;
           border-radius: 26px 26px 0 0; padding: 18px 16px max(22px, env(safe-area-inset-bottom));
           animation: sheetUp 0.22s ease-out;
@@ -935,7 +955,7 @@ function SpanishFlashcards() {
                       {card.hint}
                     </div>
                     <div style={{ position: "absolute", bottom: 14, fontSize: 12, fontWeight: 600, opacity: 0.4 }}>
-                      toca para ver el significado
+                      toca para voltear · desliza para cambiar
                     </div>
                   </div>
 
@@ -964,7 +984,7 @@ function SpanishFlashcards() {
                       <span style={{ opacity: 0.85, fontStyle: "italic" }}>{card.ex_en}</span>
                     </div>
                     <div style={{ position: "absolute", bottom: 14, fontSize: 12, fontWeight: 600, opacity: 0.7 }}>
-                      toca o desliza para seguir
+                      toca para voltear · desliza para cambiar
                     </div>
                   </div>
                 </div>
@@ -1010,7 +1030,7 @@ function SpanishFlashcards() {
 
             {/* Bottom dock: only the essentials */}
             <div className="dock">
-              <DockBtn icon="🔊" label="Escuchar" onClick={() => speakSpanish(card.es, 0.9)} disabled={!audioSupported} />
+              <DockBtn icon="🔊" label="Repetir" onClick={() => speakBoth(card.es, card.en)} disabled={!audioSupported} />
               <DockBtn icon="🐢" label="Lento" onClick={() => speakSpanish(card.es, 0.5)} disabled={!audioSupported} />
               {micSupported && (
                 <DockBtn
