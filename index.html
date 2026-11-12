@@ -42,7 +42,7 @@ const CATEGORIES_BY_LEVEL = {
     {"id":"family","label":"Familia","emoji":"👪","accent":"#3E8CFF","dark":"#123A7A"},
     {"id":"house","label":"La Casa","emoji":"🏠","accent":"#8BC34A","dark":"#33691E"},
     {"id":"body","label":"El Cuerpo","emoji":"🖐️","accent":"#FFCA28","dark":"#8F6900"},
-    {"id":"verbs","label":"Acciones","emoji":"🏃","accent":"#26C6DA","dark":"#00695C"},
+    {"id":"verbs","label":"Verbos","emoji":"🏃","accent":"#26C6DA","dark":"#00695C"},
     {"id":"faith_b","label":"Fe","emoji":"🙏","accent":"#C9A227","dark":"#6B5200"},
   ],
   intermediate: [
@@ -58,6 +58,7 @@ const CATEGORIES_BY_LEVEL = {
     {"id":"i_routine","label":"Rutina","emoji":"🌞","accent":"#8D6E63","dark":"#4E342E"},
     {"id":"i_emotions","label":"Emociones","emoji":"😄","accent":"#FF6F91","dark":"#8C1D40"},
     {"id":"i_questions","label":"Preguntas","emoji":"❓","accent":"#F04FA0","dark":"#7A1450"},
+    {"id":"i_verbs","label":"Verbos","emoji":"🏃","accent":"#26C6DA","dark":"#00695C"},
     {"id":"faith_i","label":"Fe","emoji":"🙏","accent":"#C9A227","dark":"#6B5200"},
   ],
   advanced: [
@@ -73,6 +74,7 @@ const CATEGORIES_BY_LEVEL = {
     {"id":"a_opinions","label":"Opiniones","emoji":"💭","accent":"#FF6F91","dark":"#8C1D40"},
     {"id":"a_expressions","label":"Expresiones","emoji":"😎","accent":"#FFA23E","dark":"#8C4D00"},
     {"id":"a_culture","label":"Noticias y cultura","emoji":"📰","accent":"#AB47BC","dark":"#6A1B78"},
+    {"id":"a_verbs","label":"Verbos","emoji":"🏃","accent":"#7E57C2","dark":"#4527A0"},
     {"id":"faith_a","label":"Fe","emoji":"🙏","accent":"#C9A227","dark":"#6B5200"},
   ],
 };
@@ -200,16 +202,18 @@ const DECKS = {
     {"es":"el pelo","en":"hair","hint":"EL PEH-loh","ex_es":"Tengo el pelo largo.","ex_en":"I have long hair.","visual":{"type":"emoji","value":"🦱"}},
   ],
   verbs: [
-    {"es":"comer","en":"to eat","hint":"koh-MEHR","ex_es":"Yo como pan.","ex_en":"I eat bread.","visual":{"type":"emoji","value":"🍴"}},
-    {"es":"beber","en":"to drink","hint":"beh-BEHR","ex_es":"Yo bebo agua.","ex_en":"I drink water.","visual":{"type":"emoji","value":"🥤"}},
-    {"es":"correr","en":"to run","hint":"koh-RREHR","ex_es":"Yo corro rápido.","ex_en":"I run fast.","visual":{"type":"emoji","value":"🏃"}},
-    {"es":"dormir","en":"to sleep","hint":"dor-MEER","ex_es":"Yo duermo ocho horas.","ex_en":"I sleep eight hours.","visual":{"type":"emoji","value":"😴"}},
-    {"es":"leer","en":"to read","hint":"leh-EHR","ex_es":"Yo leo un libro.","ex_en":"I read a book.","visual":{"type":"emoji","value":"📖"}},
-    {"es":"escribir","en":"to write","hint":"ehs-kree-BEER","ex_es":"Yo escribo una carta.","ex_en":"I write a letter.","visual":{"type":"emoji","value":"✍️"}},
-    {"es":"bailar","en":"to dance","hint":"bai-LAHR","ex_es":"Yo bailo salsa.","ex_en":"I dance salsa.","visual":{"type":"emoji","value":"💃"}},
-    {"es":"cantar","en":"to sing","hint":"kahn-TAHR","ex_es":"Yo canto bien.","ex_en":"I sing well.","visual":{"type":"emoji","value":"🎤"}},
-    {"es":"nadar","en":"to swim","hint":"nah-DAHR","ex_es":"Yo nado en el mar.","ex_en":"I swim in the sea.","visual":{"type":"emoji","value":"🏊"}},
-    {"es":"saltar","en":"to jump","hint":"sahl-TAHR","ex_es":"Yo salto alto.","ex_en":"I jump high.","visual":{"type":"emoji","value":"🤸"}},
+    {"es":"ser","en":"to be","hint":"SEHR","ex_es":"Ella es mi esposa.","ex_en":"She is my wife.","visual":{"type":"emoji","value":"🧍"},"conj":"yo soy · tú eres · él es"},
+    {"es":"estar","en":"to be (where / how)","hint":"ehs-TAHR","ex_es":"Estoy en casa.","ex_en":"I am at home.","visual":{"type":"emoji","value":"📍"},"conj":"yo estoy · tú estás · él está"},
+    {"es":"tener","en":"to have","hint":"teh-NEHR","ex_es":"Tengo dos hermanos.","ex_en":"I have two brothers.","visual":{"type":"emoji","value":"🤲"},"conj":"yo tengo · tú tienes · él tiene"},
+    {"es":"hay","en":"there is / there are","hint":"AI","ex_es":"Hay agua en la mesa.","ex_en":"There is water on the table.","visual":{"type":"emoji","value":"👀"},"conj":"hay un gato · hay dos gatos"},
+    {"es":"ir","en":"to go","hint":"EER","ex_es":"Voy al mercado.","ex_en":"I go to the market.","visual":{"type":"emoji","value":"🚶"},"conj":"yo voy · tú vas · él va"},
+    {"es":"querer","en":"to want","hint":"keh-REHR","ex_es":"Quiero un café.","ex_en":"I want a coffee.","visual":{"type":"emoji","value":"💭"},"conj":"yo quiero · tú quieres · él quiere"},
+    {"es":"hacer","en":"to do / to make","hint":"ah-SEHR","ex_es":"Hago la cena.","ex_en":"I make dinner.","visual":{"type":"emoji","value":"🛠️"},"conj":"yo hago · tú haces · él hace"},
+    {"es":"comer","en":"to eat","hint":"koh-MEHR","ex_es":"Como arroz con pollo.","ex_en":"I eat chicken and rice.","visual":{"type":"emoji","value":"🍴"},"conj":"yo como · tú comes · él come"},
+    {"es":"gustar","en":"to like","hint":"goos-TAHR","ex_es":"Me gusta la música.","ex_en":"I like music.","visual":{"type":"emoji","value":"❤️"},"conj":"me gusta · te gusta · le gusta"},
+    {"es":"abrir","en":"to open","hint":"ah-BREER","ex_es":"Abro la ventana.","ex_en":"I open the window.","visual":{"type":"emoji","value":"🚪"},"conj":"yo abro · tú abres · él abre"},
+    {"es":"dormir","en":"to sleep","hint":"dohr-MEER","ex_es":"Duermo ocho horas.","ex_en":"I sleep eight hours.","visual":{"type":"emoji","value":"😴"},"conj":"yo duermo · tú duermes · él duerme"},
+    {"es":"leer","en":"to read","hint":"leh-EHR","ex_es":"Leo un libro.","ex_en":"I read a book.","visual":{"type":"emoji","value":"📖"},"conj":"yo leo · tú lees · él lee"},
   ],
   faith_b: [
     {"es":"Dios","en":"God","hint":"dee-OHS","ex_es":"Dios es bueno.","ex_en":"God is good.","visual":{"type":"emoji","value":"✨"}},
@@ -343,6 +347,20 @@ const DECKS = {
     {"es":"¿qué hora es?","en":"what time is it?","hint":"keh OH-rah EHS","ex_es":"Perdón, ¿qué hora es? Mi teléfono no tiene batería.","ex_en":"Excuse me, what time is it? My phone is dead.","visual":{"type":"emoji","value":"⌚"}},
     {"es":"¿me puede ayudar?","en":"can you help me?","hint":"meh PWEH-deh ah-yoo-DAHR","ex_es":"Perdón, ¿me puede ayudar con esta maleta?","ex_en":"Excuse me, can you help me with this suitcase?","visual":{"type":"emoji","value":"🤝"}},
   ],
+  i_verbs: [
+    {"es":"estar","en":"to be (where / how)","hint":"ehs-TAHR","ex_es":"Estamos en el hotel, pero mañana vamos a la playa.","ex_en":"We're at the hotel, but tomorrow we're going to the beach.","visual":{"type":"emoji","value":"📍"},"conj":"hoy: estoy · estamos — ayer: estuve"},
+    {"es":"ser","en":"to be","hint":"SEHR","ex_es":"La comida de aquí es muy buena y barata.","ex_en":"The food here is very good and cheap.","visual":{"type":"emoji","value":"🧍"},"conj":"hoy: soy · somos — ayer: fui"},
+    {"es":"tener","en":"to have","hint":"teh-NEHR","ex_es":"Tenemos una reservación para dos noches.","ex_en":"We have a reservation for two nights.","visual":{"type":"emoji","value":"🤲"},"conj":"hoy: tengo · tenemos — ayer: tuve"},
+    {"es":"ir","en":"to go","hint":"EER","ex_es":"Mañana vamos al museo en autobús.","ex_en":"Tomorrow we're going to the museum by bus.","visual":{"type":"emoji","value":"🚶"},"conj":"hoy: voy · vamos — ayer: fui"},
+    {"es":"querer","en":"to want","hint":"keh-REHR","ex_es":"Quiero cambiar dinero antes de ir al mercado.","ex_en":"I want to exchange money before going to the market.","visual":{"type":"emoji","value":"💭"},"conj":"hoy: quiero · queremos — ayer: quise"},
+    {"es":"poder","en":"can / to be able to","hint":"poh-DEHR","ex_es":"¿Puede repetir eso más despacio, por favor?","ex_en":"Can you repeat that more slowly, please?","visual":{"type":"emoji","value":"🙋"},"conj":"hoy: puedo · podemos · ¿puede? — ayer: pude"},
+    {"es":"necesitar","en":"to need","hint":"neh-seh-see-TAHR","ex_es":"Necesito un taxi para ir al aeropuerto.","ex_en":"I need a taxi to go to the airport.","visual":{"type":"emoji","value":"❗"},"conj":"hoy: necesito · necesitamos — ayer: necesité"},
+    {"es":"salir","en":"to leave / to go out","hint":"sah-LEER","ex_es":"El tren sale a las nueve de la mañana.","ex_en":"The train leaves at nine in the morning.","visual":{"type":"emoji","value":"🚪"},"conj":"hoy: salgo · salimos · sale — ayer: salí"},
+    {"es":"llevar","en":"to carry / to wear / to take","hint":"yeh-VAHR","ex_es":"Siempre llevo el pasaporte en la mochila.","ex_en":"I always carry my passport in my backpack.","visual":{"type":"emoji","value":"🎒"},"conj":"hoy: llevo · llevamos — ayer: llevé"},
+    {"es":"tomar","en":"to take / to drink","hint":"toh-MAHR","ex_es":"Tomamos un café en la plaza después de caminar.","ex_en":"We have a coffee in the square after walking.","visual":{"type":"emoji","value":"🥤"},"conj":"hoy: tomo · tomamos — ayer: tomé"},
+    {"es":"traer","en":"to bring","hint":"trah-EHR","ex_es":"¿Me puede traer más agua, por favor?","ex_en":"Could you bring me more water, please?","visual":{"type":"emoji","value":"🛎️"},"conj":"hoy: traigo · traemos · ¿me trae? — ayer: traje"},
+    {"es":"pedir","en":"to order / to ask for","hint":"peh-DEER","ex_es":"Siempre pido la sopa del día en este restaurante.","ex_en":"I always order the soup of the day at this restaurant.","visual":{"type":"emoji","value":"🗒️"},"conj":"hoy: pido · pedimos — ayer: pedí"},
+  ],
   faith_i: [
     {"es":"el culto","en":"church service","hint":"EL KOOL-toh","ex_es":"El culto del domingo empieza a las diez.","ex_en":"The Sunday church service starts at ten.","visual":{"type":"emoji","value":"⛪"}},
     {"es":"la alabanza","en":"praise","hint":"lah ah-lah-BAHN-sah","ex_es":"Cantamos alabanzas al principio del culto.","ex_en":"We sing praises at the beginning of the service.","visual":{"type":"emoji","value":"🎶"},"noThe":true},
@@ -474,6 +492,20 @@ const DECKS = {
     {"es":"la fiesta","en":"festival / party","hint":"lah fee-EHS-tah","ex_es":"La fiesta del pueblo duró tres días y hubo música en todas las calles.","ex_en":"The town festival lasted three days and there was music in every street.","visual":{"type":"emoji","value":"🎉"}},
     {"es":"la música","en":"music","hint":"lah MOO-see-kah","ex_es":"La música de la región mezcla ritmos africanos, indígenas y europeos.","ex_en":"The music of the region mixes African, Indigenous and European rhythms.","visual":{"type":"emoji","value":"🎵"},"noThe":true},
     {"es":"el baile","en":"dance","hint":"EL BAI-leh","ex_es":"Aprendimos un baile típico en la fiesta, aunque al principio nos daba vergüenza.","ex_en":"We learned a traditional dance at the festival, although at first we were embarrassed.","visual":{"type":"emoji","value":"💃"}},
+  ],
+  a_verbs: [
+    {"es":"ser","en":"to be","hint":"SEHR","ex_es":"Era tarde cuando llegamos, pero el pueblo fue lo más bonito del viaje.","ex_en":"It was late when we arrived, but the town was the most beautiful part of the trip.","visual":{"type":"emoji","value":"🧍"},"conj":"fui · fue (pretérito) — era (imperfecto)"},
+    {"es":"estar","en":"to be (where / how)","hint":"ehs-TAHR","ex_es":"Estaba muy cansado después del vuelo, así que estuve en el hotel toda la tarde.","ex_en":"I was very tired after the flight, so I stayed at the hotel all afternoon.","visual":{"type":"emoji","value":"📍"},"conj":"estuve · estuvo (pretérito) — estaba (imperfecto)"},
+    {"es":"haber","en":"there was / there were","hint":"ah-BEHR","ex_es":"Había mucha gente en el aeropuerto porque hubo una tormenta.","ex_en":"There were a lot of people at the airport because there was a storm.","visual":{"type":"emoji","value":"👀"},"conj":"hubo (pretérito) — había (imperfecto) — ha habido"},
+    {"es":"tener","en":"to have / tener que: to have to","hint":"teh-NEHR","ex_es":"Tuve que esperar dos horas porque no tenía la reservación impresa.","ex_en":"I had to wait two hours because I didn't have the printed reservation.","visual":{"type":"emoji","value":"🤲"},"conj":"tuve · tuvimos (pretérito) — tenía (imperfecto)"},
+    {"es":"decir","en":"to say / to tell","hint":"deh-SEER","ex_es":"El médico me dijo que descansara, pero yo le dije que tenía que trabajar.","ex_en":"The doctor told me to rest, but I told him I had to work.","visual":{"type":"emoji","value":"🗨️"},"conj":"dije · dijo · dijeron (pretérito) — decía (imperfecto)"},
+    {"es":"ir","en":"to go","hint":"EER","ex_es":"Cuando era niño, iba a la playa con mis abuelos, y el año pasado fui con mi esposa.","ex_en":"When I was a child, I used to go to the beach with my grandparents, and last year I went with my wife.","visual":{"type":"emoji","value":"🚶"},"conj":"fui · fuimos (pretérito) — iba (imperfecto)"},
+    {"es":"llegar","en":"to arrive","hint":"yeh-GAHR","ex_es":"Llegamos al puerto justo cuando el barco estaba saliendo.","ex_en":"We arrived at the port just as the ship was leaving.","visual":{"type":"emoji","value":"🛬"},"conj":"llegué · llegamos · llegó (pretérito) — llegaba (imperfecto)"},
+    {"es":"poder","en":"to be able to","hint":"poh-DEHR","ex_es":"No pude llamar a casa porque mi celular no tenía señal.","ex_en":"I couldn't call home because my cell phone had no signal.","visual":{"type":"emoji","value":"💪"},"conj":"pude · pudimos (pretérito) — podía (imperfecto)"},
+    {"es":"encontrar","en":"to find","hint":"ehn-kohn-TRAHR","ex_es":"Después de buscar toda la mañana, por fin encontré las llaves en la chaqueta.","ex_en":"After searching all morning, I finally found the keys in my jacket.","visual":{"type":"emoji","value":"🔍"},"conj":"encontré · encontramos (pretérito) — encontraba (imperfecto)"},
+    {"es":"perder","en":"to lose / to miss","hint":"pehr-DEHR","ex_es":"Perdí el tren porque el taxi se quedó atrapado en el tráfico.","ex_en":"I missed the train because the taxi got stuck in traffic.","visual":{"type":"emoji","value":"😟"},"conj":"perdí · perdimos (pretérito) — perdía (imperfecto)"},
+    {"es":"volver","en":"to come back / to return","hint":"vohl-VEHR","ex_es":"Volvimos a casa cansados, pero felices de haber conocido el país.","ex_en":"We came back home tired, but happy to have gotten to know the country.","visual":{"type":"emoji","value":"🔙"},"conj":"volví · volvimos (pretérito) — volvía (imperfecto)"},
+    {"es":"pedir","en":"to ask for / to request","hint":"peh-DEER","ex_es":"Le pedí ayuda a un policía porque no entendía el mapa.","ex_en":"I asked a police officer for help because I didn't understand the map.","visual":{"type":"emoji","value":"🙋"},"conj":"pedí · pidió (pretérito) — pedía (imperfecto)"},
   ],
   faith_a: [
     {"es":"el principio","en":"beginning","hint":"EL preen-SEE-pee-oh","ex_es":"En el principio creó Dios los cielos y la tierra.","ex_en":"In the beginning God created the heaven and the earth.","visual":{"type":"emoji","value":"🌍"},"ref":"Génesis 1:1 · Genesis 1:1"},
@@ -1578,6 +1610,11 @@ function SpanishFlashcards() {
                       {sent.es}
                       <br />
                       <span style={{ opacity: 0.85, fontStyle: "italic" }}>{sent.en}</span>
+                      {card.conj && (
+                        <div style={{ marginTop: 10, display: "inline-block", background: "rgba(255,255,255,0.22)", border: "2px solid rgba(255,255,255,0.7)", borderRadius: 12, padding: "4px 10px", fontSize: "0.85em", fontWeight: 800, fontStyle: "normal" }}>
+                          🔤 {card.conj}
+                        </div>
+                      )}
                       {sent.ref && (
                         <div style={{ marginTop: 8, fontSize: "0.8em", fontWeight: 800, opacity: 0.9, letterSpacing: 0.3 }}>
                           📖 {sent.ref}
